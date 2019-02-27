@@ -15,7 +15,7 @@ config CPLUSPLUS
 
 choice
 	prompt "C++ Standard"
-	default STD_CPP11
+	default STD_CPP14
 	help
 	  C++ Standards.
 

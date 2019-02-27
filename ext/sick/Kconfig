@@ -17,7 +17,6 @@ config EDP_BASE
   select PRINTK
   select LOG
   select CPLUSPLUS
-# select STD_CPP14
   select NEWLIB_LIBC
   select RTTI
   help

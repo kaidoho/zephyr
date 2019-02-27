@@ -546,6 +546,12 @@ add_subdirectory(subsys)
 add_subdirectory(drivers)
 add_subdirectory(tests)
 
+foreach(sick_lib_name ${SICK_MODULES_NAME})
+  message("Add EDP Library: ${sick_lib_name}")
+endforeach()
+
+
+
 # Add all zephyr modules subdirectories.
 message("Including module(s): ${ZEPHYR_MODULES_NAME}")
 set(index 0)
