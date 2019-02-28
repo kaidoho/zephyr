@@ -546,11 +546,6 @@ add_subdirectory(subsys)
 add_subdirectory(drivers)
 add_subdirectory(tests)
 
-foreach(sick_lib_name ${SICK_MODULES_NAME})
-  message("Add EDP Library: ${sick_lib_name}")
-endforeach()
-
-
 
 # Add all zephyr modules subdirectories.
 message("Including module(s): ${ZEPHYR_MODULES_NAME}")
@@ -791,6 +786,7 @@ set_property(TARGET
   ${ZEPHYR_INCLUDE_DIRS}
   )
 
+
 set(zephyr_lnk
   ${LINKERFLAGPREFIX},-Map=${PROJECT_BINARY_DIR}/${KERNEL_MAP_NAME}
   -u_OffsetAbsSyms
@@ -799,11 +795,13 @@ set(zephyr_lnk
   ${ZEPHYR_LIBS_PROPERTY}
   ${LINKERFLAGPREFIX},--no-whole-archive
   kernel
+  ${SICK_EDP_LIBRARIES}
   $<TARGET_OBJECTS:${OFFSETS_LIB}>
   ${LIB_INCLUDE_DIR}
   -L${PROJECT_BINARY_DIR}
   ${TOOLCHAIN_LIBS}
   )
+
 
 if(CONFIG_GEN_ISR_TABLES)
   if(CONFIG_GEN_SW_ISR_TABLE)
