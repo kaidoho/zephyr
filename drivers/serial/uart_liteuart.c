@@ -10,7 +10,7 @@
 #include <irq.h>
 #include <device.h>
 #include <uart.h>
-#include <board.h>
+//#include <board.h>
 #include <zephyr/types.h>
 
 #define UART_EV_TX          (1 << 0)
@@ -311,7 +311,7 @@ static int uart_liteuart_init(struct device *dev);
 
 static const struct uart_liteuart_device_config uart_liteuart_dev_cfg_0 = {
     .port           = UART_BASE_ADDR,
-    .sys_clk_freq   = uart_liteuart_port_0_clk_freq,
+    .sys_clk_freq   = 115200,
     .baud_rate      = CONFIG_LITEUART_UART_0_CURRENT_SPEED,
     .rxcnt_irq      = 0,
     .txcnt_irq      = 0,

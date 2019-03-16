@@ -320,7 +320,7 @@ foreach(root ${BOARD_ROOT})
 endforeach()
 
 if(NOT BOARD_DIR)
-  message("No board named '${BOARD}' found")
+  message("MNo board named '${BOARD}' found")
   print_usage()
   unset(CACHED_BOARD CACHE)
   message(FATAL_ERROR "Invalid usage")

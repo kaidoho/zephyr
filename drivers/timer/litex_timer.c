@@ -8,8 +8,9 @@
 #include <arch/cpu.h>
 #include <device.h>
 #include <system_timer.h>
-#include <board.h>
+//#include <board.h>
 #include <misc/printk.h>
+
 
 #define TIMER_BASE                  CONFIG_TIMER_0_BASE_ADDR
 #define TIMER_LOAD_ADDR             (TIMER_BASE)
@@ -28,11 +29,18 @@
 
 static u32_t accumulated_cycle_count;
 
+
 static void litex_timer_reg_write(volatile u32_t *reg, u32_t val)
 {
     for (int i = 0; i < 4; i++)
         *(reg + i*0x4) = val >> (24 - i*8);
 }
+
+u32_t z_clock_elapsed(void)
+{
+	return 0;
+}
+
 
 static void litex_timer_irq_handler(void *device)
 {
@@ -41,7 +49,8 @@ static void litex_timer_irq_handler(void *device)
 
     accumulated_cycle_count += sys_clock_hw_cycles_per_tick;
 
-    _sys_clock_tick_announce();
+    //_sys_clock_tick_announce();
+    z_clock_announce(1);  
 }
 
 u32_t _timer_cycle_get_32(void)
