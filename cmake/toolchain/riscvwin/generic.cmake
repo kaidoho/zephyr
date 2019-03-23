@@ -10,9 +10,11 @@ set(TOOLCHAIN_HOME ${RISCVWIN_TOOLCHAIN_PATH})
 
 set(COMPILER gcc)
 
-set(CROSS_COMPILE_TARGET riscv-none-embed)
-set(SYSROOT_TARGET       riscv-none-embed)
+#set(CROSS_COMPILE_TARGET riscv-none-embed)
+#set(SYSROOT_TARGET       riscv-none-embed)
 
+set(CROSS_COMPILE_TARGET       riscv64-unknown-elf)
+set(SYSROOT_TARGET       riscv64-unknown-elf)
 set(CROSS_COMPILE ${TOOLCHAIN_HOME}/bin/${CROSS_COMPILE_TARGET}-)
 set(SYSROOT_DIR   ${TOOLCHAIN_HOME}/${SYSROOT_TARGET})
 set(TOOLCHAIN_HAS_NEWLIB ON CACHE BOOL "True if toolchain supports newlib")
