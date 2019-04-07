@@ -98,3 +98,30 @@ arduino_serial: &usart6 {};
 &rtc {
 	status = "ok";
 };
+
+&flash0 {
+  partitions {
+    compatible = "fixed-partitions";
+    #address-cells = <1>;
+    #size-cells = <1>;
+
+    raw_info_label: partition@0 {
+            label = "raw_info";
+            reg = <0x00000000 0x1000>;
+    };
+    active_image_label: partition@1000 {
+            label = "active_image";
+            reg = <0x00001000 0x400000>;
+    };
+    golden_image_label: partition@401000 {
+            label = "golden_image";
+            reg = <0x00401000 0x400000>;
+    };
+    storage_partition: partition@801000 {
+            label = "sopas-data";
+            reg = <0x00801000 0x400000>;
+    };
+  };
+};
+
+
