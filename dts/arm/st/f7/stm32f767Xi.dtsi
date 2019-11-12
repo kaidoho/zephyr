@@ -5,7 +5,7 @@
  */
 
 #include <mem.h>
-#include <st/f7/stm32f756.dtsi>
+#include <st/f7/stm32f767.dtsi>
 
 / {
 	soc {
