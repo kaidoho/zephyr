@@ -291,7 +291,7 @@ endif()
 toolchain_cc_warning_extended()
 
 # @Intent: Trigger an error when a declaration does not specify a type
-toolchain_cc_warning_error_implicit_int()
+#toolchain_cc_warning_error_implicit_int()
 
 # Allow the user to inject options when calling cmake, e.g.
 # 'cmake -DEXTRA_CFLAGS="-Werror -Wno-deprecated-declarations" ..'
