@@ -4177,6 +4177,46 @@ struct k_mem_pool {
 	}; \
 	BUILD_ASSERT(WB_UP(maxsz) >= _MPOOL_MINBLK);
 
+
+
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+/**
+ * @brief Statically define and initialize a memory pool.
+ *
+ * The memory pool's buffer contains @a n_max blocks that are @a max_size bytes
+ * long. The memory pool allows blocks to be repeatedly partitioned into
+ * quarters, down to blocks of @a min_size bytes long. The buffer is aligned
+ * to a @a align -byte boundary.
+ *
+ * If the pool is to be accessed outside the module where it is defined, it
+ * can be declared via
+ *
+ * @code extern struct k_mem_pool <name>; @endcode
+ *
+ * @param name Name of the memory pool.
+ * @param minsz Size of the smallest blocks in the pool (in bytes).
+ * @param maxsz Size of the largest blocks in the pool (in bytes).
+ * @param nmax Number of maximum sized blocks in the pool.
+ * @param align Alignment of the pool's buffer (power of 2).
+ * @req K-MPOOL-001
+ */
+#define K_SSBL_HEAP_DEFINE(name, maxsz, align)		\
+	char __aligned(WB_UP(4)) _mpool_buf_##name[WB_UP(maxsz)]; \
+	Z_STRUCT_SECTION_ITERABLE(k_mem_pool, name) = { \
+		.base = {						\
+			.buf = _mpool_buf_##name,			\
+			.max_sz   = WB_UP(maxsz),				\
+			.n_max    = 1,	\
+			.n_levels = 1,\
+			.levels = nullptr,			\
+			.flags = SYS_MEM_POOL_KERNEL			\
+		} \
+	}; \
+	BUILD_ASSERT(WB_UP(maxsz) >= _MPOOL_MINBLK);
+
+#endif
+
+
 /**
  * @brief Allocate memory from a memory pool.
  *

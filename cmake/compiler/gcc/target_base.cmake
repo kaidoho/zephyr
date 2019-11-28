@@ -9,7 +9,7 @@
 
 macro(toolchain_cc_produce_debug_info)
 
-  zephyr_compile_options(-g) # TODO: build configuration enough?
+  zephyr_compile_options(-g3) # TODO: build configuration enough?
 
 endmacro()
 

@@ -167,6 +167,62 @@ void k_free(void *ptr)
 	}
 }
 
+#ifndef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+
+#if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+
+/*
+ * Heap is defined using HEAP_MEM_POOL_SIZE configuration option.
+ *
+ * This module defines the heap memory pool and the _HEAP_MEM_POOL symbol
+ * that has the address of the associated memory pool struct.
+ */
+
+K_SSBL_HEAP_DEFINE(_heap_mem_pool, CONFIG_HEAP_MEM_POOL_SIZE);
+#define _HEAP_MEM_POOL (&_heap_mem_pool)
+
+void *k_malloc(size_t size)
+{
+	return k_mem_pool_malloc(_HEAP_MEM_POOL, size);
+}
+
+void *k_calloc(size_t nmemb, size_t size)
+{
+	void *ret;
+	size_t bounds;
+
+	if (size_mul_overflow(nmemb, size, &bounds)) {
+		return NULL;
+	}
+
+	ret = k_malloc(bounds);
+	if (ret != NULL) {
+		(void)memset(ret, 0, bounds);
+	}
+	return ret;
+}
+
+void k_thread_system_pool_assign(struct k_thread *thread)
+{
+	thread->resource_pool = _HEAP_MEM_POOL;
+}
+#endif
+
+void *z_thread_malloc(size_t size)
+{
+	void *ret;
+
+	if (_current->resource_pool != NULL) {
+		ret = k_mem_pool_malloc(_current->resource_pool, size);
+	} else {
+		ret = NULL;
+	}
+
+	return ret;
+}
+
+#else
+  
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
 
 /*
@@ -219,3 +275,8 @@ void *z_thread_malloc(size_t size)
 
 	return ret;
 }
+
+
+
+#endif
+

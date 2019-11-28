@@ -35,6 +35,7 @@ set_target_properties(
   __ZEPHYR_SUPERVISOR__
   )
 
+target_sources_ifdef(CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL   kernel PRIVATE mempool_heap_4.c)
 target_sources_ifdef(CONFIG_STACK_CANARIES        kernel PRIVATE compiler_stack_protect.c)
 target_sources_ifdef(CONFIG_SYS_CLOCK_EXISTS      kernel PRIVATE timeout.c timer.c)
 target_sources_ifdef(CONFIG_ATOMIC_OPERATIONS_C   kernel PRIVATE atomic_c.c)
