@@ -15,6 +15,8 @@
 
 static struct k_spinlock lock;
 
+
+
 static struct k_mem_pool *get_pool(int id)
 {
 	extern struct k_mem_pool _k_mem_pool_list_start[];
@@ -168,7 +170,6 @@ void k_free(void *ptr)
 }
 
 #ifndef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
-
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
 
 /*
@@ -178,7 +179,9 @@ void k_free(void *ptr)
  * that has the address of the associated memory pool struct.
  */
 
-K_SSBL_HEAP_DEFINE(_heap_mem_pool, CONFIG_HEAP_MEM_POOL_SIZE);
+K_MEM_POOL_DEFINE(_heap_mem_pool, CONFIG_HEAP_MEM_POOL_MIN_SIZE,
+		  CONFIG_HEAP_MEM_POOL_SIZE, 1, 4);
+
 #define _HEAP_MEM_POOL (&_heap_mem_pool)
 
 void *k_malloc(size_t size)
@@ -225,20 +228,35 @@ void *z_thread_malloc(size_t size)
   
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
 
+
 /*
  * Heap is defined using HEAP_MEM_POOL_SIZE configuration option.
  *
  * This module defines the heap memory pool and the _HEAP_MEM_POOL symbol
  * that has the address of the associated memory pool struct.
  */
+K_SSBL_HEAP_DEFINE(_heap_mem_pool, CONFIG_HEAP_MEM_POOL_SIZE);
 
-K_MEM_POOL_DEFINE(_heap_mem_pool, CONFIG_HEAP_MEM_POOL_MIN_SIZE,
-		  CONFIG_HEAP_MEM_POOL_SIZE, 1, 4);
-#define _HEAP_MEM_POOL (&_heap_mem_pool)
+
+static void k_heap_4_pool_init(struct k_heap_pool *p)
+{
+	z_heap_4_init(&p->base);
+}
+
+int init_help_4(struct device *unused)
+{
+	ARG_UNUSED(unused);
+	k_heap_4_pool_init(&_heap_mem_pool);
+	return 0;
+}
+
+SYS_INIT(init_help_4, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_OBJECTS);
+
+
 
 void *k_malloc(size_t size)
 {
-	return k_mem_pool_malloc(_HEAP_MEM_POOL, size);
+	return z_heap_4_malloc(size);
 }
 
 void *k_calloc(size_t nmemb, size_t size)
@@ -259,23 +277,19 @@ void *k_calloc(size_t nmemb, size_t size)
 
 void k_thread_system_pool_assign(struct k_thread *thread)
 {
-	thread->resource_pool = _HEAP_MEM_POOL;
+	return;
 }
 #endif
 
 void *z_thread_malloc(size_t size)
 {
-	void *ret;
-
-	if (_current->resource_pool != NULL) {
-		ret = k_mem_pool_malloc(_current->resource_pool, size);
-	} else {
-		ret = NULL;
-	}
-
-	return ret;
+	return k_malloc(size);
 }
 
+void k_heap_4_free(void *ptr)
+{
+	z_heap_4_free(ptr);
+}
 
 
 #endif

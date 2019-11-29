@@ -4132,6 +4132,10 @@ struct k_mem_pool {
 	_wait_q_t wait_q;
 };
 
+struct k_heap_pool {
+	struct sys_mem_pool_base base;
+};
+
 /**
  * INTERNAL_HIDDEN @endcond
  */
@@ -4200,15 +4204,17 @@ struct k_mem_pool {
  * @param align Alignment of the pool's buffer (power of 2).
  * @req K-MPOOL-001
  */
-#define K_SSBL_HEAP_DEFINE(name, maxsz, align)		\
-	char __aligned(WB_UP(4)) _mpool_buf_##name[WB_UP(maxsz)]; \
-	Z_STRUCT_SECTION_ITERABLE(k_mem_pool, name) = { \
+#define K_SSBL_HEAP_DEFINE(name, maxsz)		\
+	char __aligned(WB_UP(4)) _mpool_buf_##name[WB_UP(maxsz)  \
+				  + _MPOOL_BITS_SIZE(maxsz, 1, 1)]; \
+	struct sys_mem_pool_lvl _mpool_lvls_##name[Z_MPOOL_LVLS(maxsz, 1)]; \
+	Z_STRUCT_SECTION_ITERABLE(k_heap_pool, name) = { \
 		.base = {						\
 			.buf = _mpool_buf_##name,			\
-			.max_sz   = WB_UP(maxsz),				\
-			.n_max    = 1,	\
-			.n_levels = 1,\
-			.levels = nullptr,			\
+			.max_sz = WB_UP(maxsz),				\
+			.n_max = 1,					\
+			.n_levels = Z_MPOOL_LVLS(maxsz, 1),		\
+			.levels = _mpool_lvls_##name,			\
 			.flags = SYS_MEM_POOL_KERNEL			\
 		} \
 	}; \
@@ -4275,6 +4281,15 @@ extern void k_mem_pool_free(struct k_mem_block *block);
  * @req K-MPOOL-002
  */
 extern void k_mem_pool_free_id(struct k_mem_block_id *id);
+
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+
+extern void *z_heap_4_malloc( size_t xWantedSize );
+extern void  z_heap_4_free( void *pv );
+
+extern void z_heap_4_init (struct sys_mem_pool_base * pHeapBase );
+extern void k_heap_4_free(void *ptr);
+#endif
 
 /**
  * @}

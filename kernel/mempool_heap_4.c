@@ -71,11 +71,6 @@ typedef struct A_BLOCK_LINK
  */
 static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert );
 
-/*
- * Called automatically to setup the required heap structures the first time
- * pvPortMalloc() is called.
- */
-static void prvHeapInit( void );
 
 /*-----------------------------------------------------------*/
 
@@ -99,19 +94,15 @@ static size_t xBlockAllocatedBit = 0;
 
 /*-----------------------------------------------------------*/
 
-void *pvPortMalloc( size_t xWantedSize )
+void *z_heap_4_malloc( size_t xWantedSize )
 {
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
 void *pvReturn = NULL;
-
+int lockRes;
 	//TODO: vTaskSuspendAll();
+
+	lockRes = irq_lock();
 	{
-		/* If this is the first call to malloc then the heap will require
-		initialisation to setup the list of free blocks. */
-		if( pxEnd == NULL )
-		{
-			prvHeapInit();
-		}
 
 		/* Check the requested block size is not so large that the top bit is
 		set.  The top bit of the block size member of the BlockLink_t structure
@@ -191,6 +182,7 @@ void *pvReturn = NULL;
 			}
 		}
 	}
+	irq_unlock(lockRes);
 	//TODO: ( void ) xTaskResumeAll();
 
 
@@ -198,10 +190,11 @@ void *pvReturn = NULL;
 }
 /*-----------------------------------------------------------*/
 
-void vPortFree( void *pv )
+void z_heap_4_free( void *pv )
 {
 	uint8_t *puc = ( uint8_t * ) pv;
 	BlockLink_t *pxLink;
+	int lockRes;
 
 	if( pv != NULL )
 	{
@@ -225,12 +218,14 @@ void vPortFree( void *pv )
 				pxLink->xBlockSize &= ~xBlockAllocatedBit;
 
 				//TODO: vTaskSuspendAll();
+				lockRes = irq_lock();
 				{
 					/* Add this block to the list of free blocks. */
 					xFreeBytesRemaining += pxLink->xBlockSize;
 					prvInsertBlockIntoFreeList( ( ( BlockLink_t * ) pxLink ) );
 				}
 				//TODO:  ( void ) xTaskResumeAll();
+				irq_unlock(lockRes);
 			}
 		}
 	}
@@ -255,36 +250,30 @@ void vPortInitialiseBlocks( void )
 }
 /*-----------------------------------------------------------*/
 
-static void prvHeapInit( void )
+void z_heap_4_init(struct sys_mem_pool_base * pHeapBase )
 {
 	BlockLink_t *pxFirstFreeBlock;
-	uint8_t *pucAlignedHeap;
-	size_t uxAddress;
 	size_t xTotalHeapSize = CONFIG_HEAP_MEM_POOL_SIZE;
 
-	/* Ensure the heap starts on a correctly aligned boundary. */
-	//TODO: uxAddress = ( size_t ) &_heap_mem_pool;
-
-	pucAlignedHeap = ( uint8_t * ) uxAddress;
-
+	uint8_t * pHeapStart = (uint8_t *) pHeapBase->buf;
 	/* xStart is used to hold a pointer to the first item in the list of free
 	blocks.  The void cast is used to prevent compiler warnings. */
-	xStart.pxNextFreeBlock = ( void * ) pucAlignedHeap;
+	xStart.pxNextFreeBlock = ( void * ) pHeapStart;
 	xStart.xBlockSize = ( size_t ) 0;
+
+
 
 	/* pxEnd is used to mark the end of the list of free blocks and is inserted
 	at the end of the heap space. */
-	uxAddress = ( ( size_t ) pucAlignedHeap ) + xTotalHeapSize;
-	uxAddress -= xHeapStructSize;
-	//uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
-	pxEnd = ( void * ) uxAddress;
+
+	pxEnd = ( void * ) &( pHeapStart[xTotalHeapSize - xHeapStructSize]);
 	pxEnd->xBlockSize = 0;
 	pxEnd->pxNextFreeBlock = NULL;
 
 	/* To start with there is a single free block that is sized to take up the
 	entire heap space, minus the space taken by pxEnd. */
-	pxFirstFreeBlock = ( void * ) pucAlignedHeap;
-	pxFirstFreeBlock->xBlockSize = uxAddress - ( size_t ) pxFirstFreeBlock;
+	pxFirstFreeBlock = ( void * ) pHeapStart;
+	pxFirstFreeBlock->xBlockSize = xTotalHeapSize - xHeapStructSize;
 	pxFirstFreeBlock->pxNextFreeBlock = pxEnd;
 
 	/* Only one block exists - and it covers the entire usable heap space. */

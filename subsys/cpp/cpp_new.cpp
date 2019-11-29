@@ -42,7 +42,12 @@ void* operator new[](size_t size)
 void operator delete(void* ptr) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
+
 #else
 	ARG_UNUSED(ptr);
 #endif
@@ -51,7 +56,11 @@ void operator delete(void* ptr) noexcept
 void operator delete[](void* ptr) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
 #else
 	ARG_UNUSED(ptr);
 #endif
@@ -81,7 +90,11 @@ void* operator new[](size_t size, const std::nothrow_t&) noexcept
 void operator delete(void* ptr, const std::nothrow_t&) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
 #else
 	ARG_UNUSED(ptr);
 #endif
@@ -90,7 +103,11 @@ void operator delete(void* ptr, const std::nothrow_t&) noexcept
 void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
 #else
 	ARG_UNUSED(ptr);
 #endif
@@ -101,7 +118,11 @@ void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 void operator delete(void* ptr, size_t) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
 #else
 	ARG_UNUSED(ptr);
 #endif
@@ -110,7 +131,11 @@ void operator delete(void* ptr, size_t) noexcept
 void operator delete[](void* ptr, size_t) noexcept
 {
 #if (CONFIG_HEAP_MEM_POOL_SIZE > 0)
+#ifdef CONFIG_HEAP_MEM_ALLOC_SCHEME_SSBL
+	k_heap_4_free(ptr);
+#else
 	k_free(ptr);
+#endif
 #else
 	ARG_UNUSED(ptr);
 #endif
