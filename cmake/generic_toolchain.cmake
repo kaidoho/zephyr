@@ -43,8 +43,11 @@ endif()
 
 # Host-tools don't unconditionally set TOOLCHAIN_HOME anymore,
 # but in case Zephyr's SDK toolchain is used, set TOOLCHAIN_HOME
-if("${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "zephyr")
+if("${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "zephyr" OR "${ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "zephyr2")
+  
   set(TOOLCHAIN_HOME ${HOST_TOOLS_HOME})
+  message(STATUS "Assuming Zephyr toolchain. Set host tools home to: " ${TOOLCHAIN_HOME})
+  
 endif()
 
 set(TOOLCHAIN_ROOT ${TOOLCHAIN_ROOT} CACHE STRING "Zephyr toolchain root")

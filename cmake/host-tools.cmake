@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
-include(${ZEPHYR_BASE}/cmake/toolchain/zephyr/host-tools.cmake)
+if("$ENV{ZEPHYR_TOOLCHAIN_VARIANT}" STREQUAL "zephyr2")
+  include(${ZEPHYR_BASE}/cmake/toolchain/zephyr2/host-tools.cmake)
+else()
+  include(${ZEPHYR_BASE}/cmake/toolchain/zephyr/host-tools.cmake)
+endif()
+
 
 # west is optional
 find_program(
