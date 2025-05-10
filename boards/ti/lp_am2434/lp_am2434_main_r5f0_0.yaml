@@ -1,0 +1,9 @@
+identifier: lp_am243/am2434/main_r5f0_0
+name: TI LP AM243X
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+ram: 192
+vendor: ti
+

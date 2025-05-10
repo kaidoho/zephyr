@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2025 Texas Instruments Incorporated
+ *	Andrew Davis <afd@ti.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/pinctrl/ti-k3-pinctrl.h>
+
+&pinctrl {
+	main_uart0_rx_default: main_uart0_rx_default {
+		pinmux = <K3_PINMUX(0x0230, PIN_INPUT, MUX_MODE_0)>; /* (B10) UART0_RXD */
+	};
+
+	main_uart0_tx_default: main_uart0_tx_default {
+		pinmux = <K3_PINMUX(0x0234, PIN_OUTPUT, MUX_MODE_0)>; /* (B11) UART0_TXD */
+	};
+
+	main_gpio0_led_default: main_gpio0_led_default {
+		pinmux = <K3_PINMUX(0x0058, PIN_OUTPUT, MUX_MODE_7)>; /* (U19) GPMC0_AD7 */
+	};
+};

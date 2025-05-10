@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2024 Texas Instruments Incorporated
+ *	Andrew Davis <afd@ti.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <ti/am2x_main_r5.dtsi>
+#include "lp_am2434_main_r5f0_0-pinctrl.dtsi"
+
+/ {
+	model = "TI AM24x";
+	compatible = "ti,lp_am2434";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+	};
+
+	aliases {
+		led0 = &heartbeat_led;
+	};
+	cpus {
+		cpu@0 {
+			status = "okay";
+			clock-frequency = <DT_FREQ_M(800)>;
+		};
+	};
+
+	leds: leds {
+		compatible = "gpio-leds";
+
+		heartbeat_led: led_0 {
+			gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;
+			label = "Heartbeat LED";
+		};
+	};
+};
+
+&uart0 {
+	current-speed = <115200>;
+	pinctrl-0 = <&main_uart0_rx_default &main_uart0_tx_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&gpio0 {
+	pinctrl-0 = <&main_gpio0_led_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
