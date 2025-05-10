@@ -4,6 +4,6 @@ type: mcu
 arch: arm
 toolchain:
   - zephyr
-ram: 192
+ram: 256
 vendor: ti
 
