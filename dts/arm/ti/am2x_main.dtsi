@@ -8,6 +8,7 @@
 #include <mem.h>
 #include <freq.h>
 #include <zephyr/dt-bindings/interrupt-controller/ti-vim.h>
+#include <zephyr/dt-bindings/gpio/gpio.h>
 
 / {
 	#address-cells = <1>;
