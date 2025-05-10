@@ -1,6 +1,6 @@
 board:
   name: lp_am2434
-  full_name: LP-AM2434
+  full_name: LP_AM2434
   vendor: ti
   socs:
   - name: am2434
